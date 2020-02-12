@@ -1,10 +1,15 @@
 import React from "react";
-import { NavigationContainer } from "@react-navigation/native";
+import { StatusBar, View } from "react-native";
+import {
+  NavigationContainer,
+  DefaultTheme,
+  DarkTheme
+} from "@react-navigation/native";
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
 
-import { AuthContext } from "./authContext";
+import { AuthContext, ThemeContext } from "./context";
 import {
   Home,
   Details,
@@ -60,10 +65,29 @@ const AuthStackScreen = () => (
   </AuthStack.Navigator>
 );
 
+const CustomDarkTheme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    buttonBackground: "#bb86fc",
+    buttonText: "#fff"
+  }
+};
+
+const CustomLightTheme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    buttonBackground: "#147efb",
+    buttonText: "#fff"
+  }
+};
+
 class App extends React.Component {
   state = {
     isLoading: true,
-    userToken: null
+    userToken: null,
+    isDarkTheme: false
   };
 
   componentDidMount() {
@@ -84,20 +108,46 @@ class App extends React.Component {
     }
   });
 
+  themeMethods = () => ({
+    toggleTheme: () => {
+      this.setState(state => ({ isDarkTheme: !state.isDarkTheme }));
+    }
+  });
+
   // TODO: I don't want a navigation animation when switching states (drawer => auth stack). How?
   render() {
     return (
-      <AuthContext.Provider value={this.authMethods()}>
-        <NavigationContainer>
-          {this.state.isLoading ? (
-            <Splash />
-          ) : this.state.userToken === null ? (
-            <AuthStackScreen />
-          ) : (
-            <DrawerScreen />
-          )}
-        </NavigationContainer>
-      </AuthContext.Provider>
+      <View
+        style={{
+          flex: 1,
+          backgroundColor: this.state.isDarkTheme
+            ? CustomDarkTheme.colors.background
+            : CustomLightTheme.colors.background
+        }}
+      >
+        <AuthContext.Provider value={this.authMethods()}>
+          <ThemeContext.Provider value={this.themeMethods()}>
+            {this.state.isDarkTheme ? (
+              <StatusBar barStyle="light-content" />
+            ) : (
+              <StatusBar barStyle="dark-content" />
+            )}
+            <NavigationContainer
+              theme={
+                this.state.isDarkTheme ? CustomDarkTheme : CustomLightTheme
+              }
+            >
+              {this.state.isLoading ? (
+                <Splash />
+              ) : this.state.userToken === null ? (
+                <AuthStackScreen />
+              ) : (
+                <DrawerScreen />
+              )}
+            </NavigationContainer>
+          </ThemeContext.Provider>
+        </AuthContext.Provider>
+      </View>
     );
   }
 }

@@ -1,15 +1,51 @@
 import React from "react";
-import { View, Text, StyleSheet, Button } from "react-native";
+import {
+  View,
+  Text as DefaultText,
+  StyleSheet,
+  TouchableOpacity
+} from "react-native";
+import { useTheme } from "@react-navigation/native";
 
-import { AuthContext } from "./authContext";
+import { AuthContext, ThemeContext } from "./context";
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  button: {
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    marginVertical: 10,
+    borderRadius: 5
   }
 });
+
+const Text = props => {
+  const { colors } = useTheme();
+  return (
+    <DefaultText style={{ color: colors.text }} {...props}>
+      {props.children}
+    </DefaultText>
+  );
+};
+
+const Button = ({ title, onPress }) => {
+  const { colors } = useTheme();
+
+  return (
+    <TouchableOpacity
+      style={[styles.button, { backgroundColor: colors.buttonBackground }]}
+      onPress={onPress}
+    >
+      <Text style={{ color: colors.buttonText, fontWeight: "600" }}>
+        {title}
+      </Text>
+    </TouchableOpacity>
+  );
+};
 
 const ScreenContainer = ({ children }) => (
   <View style={styles.container}>{children}</View>
@@ -58,10 +94,13 @@ export const Search = ({ navigation }) => (
 
 export const Profile = ({ navigation }) => {
   const { signOut } = React.useContext(AuthContext);
+  const { toggleTheme } = React.useContext(ThemeContext);
+
   return (
     <ScreenContainer>
       <Text>Profile Screen</Text>
       <Button title="Drawer" onPress={() => navigation.toggleDrawer()} />
+      <Button title="Toggle Theme" onPress={() => toggleTheme()} />
       <Button title="Sign Out" onPress={() => signOut()} />
     </ScreenContainer>
   );
