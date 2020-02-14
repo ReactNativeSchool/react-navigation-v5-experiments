@@ -8,19 +8,24 @@ import {
 import { createStackNavigator } from "@react-navigation/stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator } from "@react-navigation/drawer";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { enableScreens } from "react-native-screens";
 
 import { AuthContext, ThemeContext } from "./context";
 import {
   Home,
   Details,
   Search,
+  Search2,
   Profile,
   Splash,
   SignIn,
   CreateAccount
 } from "./Screens";
 
-const HomeStack = createStackNavigator();
+enableScreens();
+
+const HomeStack = createNativeStackNavigator();
 const HomeStackScreen = () => (
   <HomeStack.Navigator>
     <HomeStack.Screen name="Home" component={Home} />
@@ -38,6 +43,7 @@ const SearchStack = createStackNavigator();
 const SearchStackScreen = () => (
   <SearchStack.Navigator>
     <SearchStack.Screen name="Search" component={Search} />
+    <SearchStack.Screen name="Search2" component={Search2} />
   </SearchStack.Navigator>
 );
 

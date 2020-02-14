@@ -80,6 +80,7 @@ export const Details = ({ route }) => (
 export const Search = ({ navigation }) => (
   <ScreenContainer>
     <Text>Search Screen</Text>
+    <Button title="Search 2" onPress={() => navigation.navigate("Search2")} />
     <Button
       title="React Native School"
       onPress={() =>
@@ -89,6 +90,12 @@ export const Search = ({ navigation }) => (
         })
       }
     />
+  </ScreenContainer>
+);
+
+export const Search2 = () => (
+  <ScreenContainer>
+    <Text>Search2 Screen</Text>
   </ScreenContainer>
 );
 
