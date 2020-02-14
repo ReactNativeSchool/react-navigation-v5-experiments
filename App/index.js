@@ -55,11 +55,18 @@ const TabsScreen = () => (
   </Tabs.Navigator>
 );
 
+const ProfileStack = createStackNavigator();
+const ProfileStackScreen = () => (
+  <ProfileStack.Navigator>
+    <ProfileStack.Screen name="Profile" component={Profile} />
+  </ProfileStack.Navigator>
+);
+
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => (
   <Drawer.Navigator>
     <Drawer.Screen name="Home" component={TabsScreen} />
-    <Drawer.Screen name="Profile" component={Profile} />
+    <Drawer.Screen name="Profile" component={ProfileStackScreen} />
   </Drawer.Navigator>
 );
 
