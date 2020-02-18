@@ -64,7 +64,7 @@ const ProfileStackScreen = () => (
 
 const Drawer = createDrawerNavigator();
 const DrawerScreen = () => (
-  <Drawer.Navigator>
+  <Drawer.Navigator initialRouteName="Profile" lazy={false}>
     <Drawer.Screen name="Home" component={TabsScreen} />
     <Drawer.Screen name="Profile" component={ProfileStackScreen} />
   </Drawer.Navigator>
@@ -96,10 +96,35 @@ const CustomLightTheme = {
   }
 };
 
+const RootStack = createStackNavigator();
+const RootStackScreen = ({ userToken }) => (
+  <RootStack.Navigator headerMode="none">
+    {userToken === null ? (
+      <RootStack.Screen
+        name="Auth"
+        component={AuthStackScreen}
+        options={{
+          // animationTypeForReplace: "pop",
+          animationEnabled: false
+        }}
+      />
+    ) : (
+      <RootStack.Screen
+        name="App"
+        component={DrawerScreen}
+        options={{
+          // animationTypeForReplace: "push",
+          animationEnabled: false
+        }}
+      />
+    )}
+  </RootStack.Navigator>
+);
+
 class App extends React.Component {
   state = {
     isLoading: true,
-    userToken: null,
+    userToken: "asdf",
     isDarkTheme: false
   };
 
@@ -127,8 +152,11 @@ class App extends React.Component {
     }
   });
 
-  // TODO: I don't want a navigation animation when switching states (drawer => auth stack). How?
   render() {
+    if (this.state.isLoading) {
+      return <Splash />;
+    }
+
     return (
       <View
         style={{
@@ -150,13 +178,7 @@ class App extends React.Component {
                 this.state.isDarkTheme ? CustomDarkTheme : CustomLightTheme
               }
             >
-              {this.state.isLoading ? (
-                <Splash />
-              ) : this.state.userToken === null ? (
-                <AuthStackScreen />
-              ) : (
-                <DrawerScreen />
-              )}
+              <RootStackScreen userToken={this.state.userToken} />
             </NavigationContainer>
           </ThemeContext.Provider>
         </AuthContext.Provider>
