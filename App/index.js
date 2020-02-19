@@ -121,70 +121,73 @@ const RootStackScreen = ({ userToken }) => (
   </RootStack.Navigator>
 );
 
-class App extends React.Component {
-  state = {
-    isLoading: true,
-    userToken: "asdf",
-    isDarkTheme: false
-  };
+const App = () => {
+  const [isLoading, setIsLoading] = React.useState(true);
+  const [userToken, setUserToken] = React.useState("asdf");
+  const [isDarkTheme, setDarkTheme] = React.useState(false);
 
-  componentDidMount() {
+  const authContext = React.useMemo(
+    () => ({
+      signIn: () => {
+        setIsLoading(false);
+        setUserToken("asdf");
+      },
+      signOut: () => {
+        setIsLoading(false);
+        setUserToken(null);
+      },
+      signUp: () => {
+        setIsLoading(false);
+        setUserToken("asdf");
+      }
+    }),
+    []
+  );
+
+  const themeContext = React.useMemo(
+    () => ({
+      toggleTheme: () => {
+        setDarkTheme(!isDarkTheme);
+      }
+    }),
+    [isDarkTheme]
+  );
+
+  React.useEffect(() => {
     setTimeout(() => {
-      this.setState({ isLoading: false });
+      setIsLoading(false);
     }, 1000);
+  }, []);
+
+  if (isLoading) {
+    return <Splash />;
   }
 
-  authMethods = () => ({
-    signIn: () => {
-      this.setState({ isLoading: false, userToken: "asdf" });
-    },
-    signOut: () => {
-      this.setState({ isLoading: false, userToken: null });
-    },
-    signUp: () => {
-      this.setState({ isLoading: false, userToken: "asdf" });
-    }
-  });
-
-  themeMethods = () => ({
-    toggleTheme: () => {
-      this.setState(state => ({ isDarkTheme: !state.isDarkTheme }));
-    }
-  });
-
-  render() {
-    if (this.state.isLoading) {
-      return <Splash />;
-    }
-
-    return (
-      <View
-        style={{
-          flex: 1,
-          backgroundColor: this.state.isDarkTheme
-            ? CustomDarkTheme.colors.background
-            : CustomLightTheme.colors.background
-        }}
-      >
-        <AuthContext.Provider value={this.authMethods()}>
-          <ThemeContext.Provider value={this.themeMethods()}>
-            {this.state.isDarkTheme ? (
-              <StatusBar barStyle="light-content" />
-            ) : (
-              <StatusBar barStyle="dark-content" />
-            )}
-            <NavigationContainer
-              theme={
-                this.state.isDarkTheme ? CustomDarkTheme : CustomLightTheme
-              }
-            >
-              <RootStackScreen userToken={this.state.userToken} />
-            </NavigationContainer>
-          </ThemeContext.Provider>
-        </AuthContext.Provider>
-      </View>
-    );
-  }
-}
+  return (
+    <View
+      style={{
+        flex: 1,
+        backgroundColor: isDarkTheme
+          ? CustomDarkTheme.colors.background
+          : CustomLightTheme.colors.background
+      }}
+    >
+      <AuthContext.Provider value={authContext}>
+        <ThemeContext.Provider value={themeContext}>
+          {isDarkTheme ? (
+            <StatusBar barStyle="light-content" />
+          ) : (
+            <StatusBar barStyle="dark-content" />
+          )}
+          <NavigationContainer
+            theme={isDarkTheme ? CustomDarkTheme : CustomLightTheme}
+          >
+            <RootStackScreen userToken={userToken} />
+          </NavigationContainer>
+        </ThemeContext.Provider>
+      </AuthContext.Provider>
+    </View>
+  );
+};
 
 export default App;
